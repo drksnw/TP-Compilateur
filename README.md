@@ -47,3 +47,9 @@ Sortie de ce code:
 9
 10
 ```
+
+### Techniques et contraintes
+
+* Le projet sera réalisé en Python à l'aide de la bibliothèque _PLY_
+* Le projet doit impérativement passer par la construction d'un arbre syntaxique.
+* Le projet devra être conçu pour que les étapes intermédiaires du traitement soient facilement accessibles.
