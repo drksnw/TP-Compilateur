@@ -1,0 +1,11 @@
+# Exemple Code #
+################
+
+*.txt
+
+
+# Local Folders #
+#################
+
+__pycache__
+generated
