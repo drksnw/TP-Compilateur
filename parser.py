@@ -5,13 +5,45 @@ import AST
 
 vars = {}
 
+def p_executable(p):
+    ''' executable : function newline '''
+    p[0] = AST.ExecutableNode(p[1])
+
+def p_executable_recursive(p):
+    ''' executable : function newline executable '''
+    p[0] = AST.ExecutableNode([p[1]]+p[3].children)
+
 def p_programme_statement(p):
-    ''' programme : statement newline '''
+    ''' programme : statement newline'''
     p[0] = AST.ProgramNode(p[1])
 
 def p_programme_recursive(p):
     ''' programme : statement newline programme '''
     p[0] = AST.ProgramNode([p[1]]+p[3].children)
+
+def p_function_noargs(p):
+    ''' function : FONCTION IDENTIFIER '(' ')' newline DEBUT newline programme FINFONCTION'''
+    p[0] = AST.FunctionNode([p[2], 0, p[8]])
+
+def p_function(p):
+    ''' function : FONCTION IDENTIFIER '(' arguments ')' newline DEBUT newline programme FINFONCTION'''
+    p[0] = AST.FunctionNode([p[2], p[4], p[9]])
+
+def p_arguments(p):
+    ''' arguments : IDENTIFIER '''
+    p[0] = [p[1]]
+
+def p_arguments_recursive(p):
+    ''' arguments : IDENTIFIER ',' arguments '''
+    p[0] = [p[1]]+p[3]
+
+def p_arguments_val(p):
+    ''' argval : expression '''
+    p[0] = [p[1]]
+
+def p_arguments_val_recurse(p):
+    ''' argval : expression ',' argval '''
+    p[0] = [p[1]] + p[3]
 
 def p_statement(p):
     ''' statement : assignation
@@ -21,6 +53,10 @@ def p_statement(p):
 def p_statement_print(p):
     ''' statement : AFFICHE expression '''
     p[0] = AST.PrintNode(p[2])
+
+def p_statement_call(p):
+    ''' statement : APPELLE IDENTIFIER '(' argval ')' '''
+    p[0] = AST.CallNode([p[2], p[4]])
 
 def p_structure(p):
     ''' structure : TANT QUE expression FAIRE newline programme FINTANTQUE '''
@@ -50,7 +86,6 @@ def p_assign(p):
 
 def p_error(p):
     if p:
-        print(p)
         print ("Syntax error in line %d" % p.lineno)
         yacc.errok()
     else:
