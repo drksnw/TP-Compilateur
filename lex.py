@@ -16,7 +16,10 @@ reserved_words = (
 	'fintantque',
 	'appelle',
 	'sinon',
-	'lire'
+	'lire',
+	'retourne',
+	'donne',
+	'naleat'
 )
 
 tokens = (

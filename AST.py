@@ -145,6 +145,9 @@ class CondNode(Node):
 class InputNode(Node):
     type = 'input'
 
+class PyExecNode(Node):
+    type = 'pyexec'
+
 class EntryNode(Node):
     type = 'ENTRY'
     def __init__(self):

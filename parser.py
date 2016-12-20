@@ -33,9 +33,17 @@ def p_function_noargs(p):
     ''' function : FONCTION IDENTIFIER '(' ')' newline DEBUT newline programme FIN'''
     p[0] = AST.FunctionNode([p[2], 0, p[8]])
 
+def p_function_noargs_return(p):
+    ''' function : FONCTION IDENTIFIER '(' ')' newline DEBUT newline programme RETOURNE IDENTIFIER newline FIN'''
+    p[0] = AST.FunctionNode([p[2], 0, p[8], p[10]])
+
 def p_function(p):
     ''' function : FONCTION IDENTIFIER '(' arguments ')' newline DEBUT newline programme FIN'''
     p[0] = AST.FunctionNode([p[2], p[4], p[9]])
+
+def p_function_return(p):
+    ''' function : FONCTION IDENTIFIER '(' arguments ')' newline DEBUT newline programme RETOURNE IDENTIFIER newline FIN'''
+    p[0] = AST.FunctionNode([p[2], p[4], p[9], p[11]])
 
 def p_arguments(p):
     ''' arguments : IDENTIFIER '''
@@ -70,9 +78,17 @@ def p_statement_call_noargs(p):
     ''' statement : APPELLE IDENTIFIER '(' ')' '''
     p[0] = AST.CallNode([p[2], []])
 
+def p_statement_call_noargs_return(p):
+    ''' statement : APPELLE IDENTIFIER '(' ')' DONNE IDENTIFIER '''
+    p[0] = AST.CallNode([p[2], [], p[6]])
+
 def p_statement_call(p):
     ''' statement : APPELLE IDENTIFIER '(' argval ')' '''
     p[0] = AST.CallNode([p[2], p[4]])
+
+def p_statement_call_return(p):
+    ''' statement : APPELLE IDENTIFIER '(' argval ')' DONNE IDENTIFIER '''
+    p[0] = AST.CallNode([p[2], p[4], p[7]])
 
 def p_statement_inc(p):
     '''statement : INC expression'''
@@ -85,6 +101,10 @@ def p_statement_dec(p):
 def p_statement_input(p):
     ''' statement : LIRE IDENTIFIER '''
     p[0] = AST.InputNode([p[2]])
+
+def p_statement_pyexec(p):
+    ''' statement : NALEAT IDENTIFIER '''
+    p[0] = AST.PyExecNode([p[2]])
 
 def p_structure(p):
     ''' structure : TANT QUE expression FAIRE newline programme FINTANTQUE '''
@@ -136,7 +156,7 @@ precedence = (
 def parse(program):
     return yacc.parse(program)
 
-yacc.yacc(outputdir='generated')
+yacc.yacc(outputdir='generated', debug=0)
 
 if __name__ == "__main__":
     import sys

@@ -18,21 +18,35 @@ _vars = {}
 
 _running_function = None
 
+@addToClass(AST.PyExecNode)
+def execute(self):
+    from random import randrange
+    global _running_function
+    _funcs[_running_function][1][self.children[0]] = randrange(10000)
+
+
 @addToClass(AST.FunctionNode)
 def execute(self):
     from collections import OrderedDict
     _funcs[self.children[0]] = {}
     _funcs[self.children[0]][0] = self.children[2]
     _funcs[self.children[0]][1] = OrderedDict()
+    _funcs[self.children[0]][3] = []
     if self.children[1] != 0:
         for arg in self.children[1]:
             _funcs[self.children[0]][1][arg] = None
+            _funcs[self.children[0]][3].append(arg)
+    if len(self.children) > 3:
+        _funcs[self.children[0]][2] = self.children[3]
 
 @addToClass(AST.CallNode)
 def execute(self):
+    from collections import OrderedDict
     global _running_function
     next_function = self.children[0]
-
+    _funcs[next_function][1] = OrderedDict()
+    for arg in _funcs[next_function][3]:
+        _funcs[next_function][1][arg] = None
     i = 0
     keys = []
     for k in _funcs[next_function][1].keys():
@@ -42,6 +56,8 @@ def execute(self):
         i += 1
     _running_function = next_function
     _funcs[_running_function][0].execute()
+    if self.children[2]:
+        _funcs["main"][1][self.children[2]] = _funcs[_running_function][1][_funcs[_running_function][2]]
     _running_function = "main"
 
 @addToClass(AST.ExecutableNode)
@@ -71,7 +87,16 @@ def execute(self):
     args = [c.execute() for c in self.children]
     if len(args) == 1:
         args.insert(0,0)
-    return reduce(operations[self.op], args)
+    try:
+        return reduce(operations[self.op], args)
+    except TypeError:
+        for arg in args:
+            try:
+                float(arg)
+            except ValueError:
+                print("Error:",arg,"is not a number !")
+                exit(1)
+
 
 @addToClass(AST.AssignNode)
 def execute(self):
