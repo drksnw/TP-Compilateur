@@ -15,14 +15,19 @@ reserved_words = (
 	'faire',
 	'fintantque',
 	'appelle',
-	'finfonction'
+	'sinon',
+	'lire'
 )
 
 tokens = (
 	'NUMBER',
 	'ADD_OP',
 	'MUL_OP',
+	'CMP_OP',
+	'EQ_OP',
+	'NEQ_OP',
 	'IDENTIFIER',
+	'STRING',
 	'newline'
 ) + tuple(map(lambda s:s.upper(),reserved_words))
 
@@ -34,6 +39,18 @@ def t_ADD_OP(t):
 
 def t_MUL_OP(t):
 	r'[*/]'
+	return t
+
+def t_CMP_OP(t):
+	r'[<>]'
+	return t
+
+def t_EQ_OP(t):
+	r'=='
+	return t
+
+def t_NEQ_OP(t):
+	r'!='
 	return t
 
 def t_NUMBER(t):
@@ -49,6 +66,10 @@ def t_IDENTIFIER(t):
 	r'[A-Za-z_]\w*'
 	if t.value in reserved_words:
 		t.type = t.value.upper()
+	return t
+
+def t_STRING(t):
+	r'".+"'
 	return t
 
 def t_newline(t):

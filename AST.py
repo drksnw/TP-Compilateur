@@ -45,6 +45,9 @@ class Node:
     def __repr__(self):
         return self.type
 
+    def execute(self):
+        pass
+
     def makegraphicaltree(self, dot=None, edgeLabels=True):
             if not dot: dot = pydot.Dot()
             dot.add_node(pydot.Node(self.ID,label=repr(self), shape=self.shape))
@@ -132,6 +135,15 @@ class CallNode(Node):
 
 class ExecutableNode(Node):
     type = 'executable'
+
+class IncDecNode(Node):
+    type = 'incdec'
+
+class CondNode(Node):
+    type = 'if'
+
+class InputNode(Node):
+    type = 'input'
 
 class EntryNode(Node):
     type = 'ENTRY'
