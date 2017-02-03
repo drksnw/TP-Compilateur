@@ -1,10 +1,12 @@
-# Exemple Code #
+# Files 	   #
 ################
 
 *.txt
+*.pdf
+*.pyc
 
 
-# Local Folders #
+# Folders       #
 #################
 
 __pycache__

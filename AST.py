@@ -153,6 +153,9 @@ class EntryNode(Node):
     def __init__(self):
         Node.__init__(self, None)
 
+class NewLineNode(Node):
+    type = 'newline'
+
 def addToClass(cls):
     ''' D�corateur permettant d'ajouter la fonction d�cor�e en tant que m�thode
     � une classe.

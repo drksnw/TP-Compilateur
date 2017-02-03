@@ -31,19 +31,19 @@ def p_condition_else(p):
 
 def p_function_noargs(p):
     ''' function : FONCTION IDENTIFIER '(' ')' newline DEBUT newline programme FIN'''
-    p[0] = AST.FunctionNode([p[2], 0, p[8]])
+    p[0] = AST.FunctionNode([AST.TokenNode(p[2]), AST.TokenNode(0), p[8]])
 
 def p_function_noargs_return(p):
     ''' function : FONCTION IDENTIFIER '(' ')' newline DEBUT newline programme RETOURNE IDENTIFIER newline FIN'''
-    p[0] = AST.FunctionNode([p[2], 0, p[8], p[10]])
+    p[0] = AST.FunctionNode([AST.TokenNode(p[2]), AST.TokenNode(0), p[8], AST.TokenNode(p[10])])
 
 def p_function(p):
     ''' function : FONCTION IDENTIFIER '(' arguments ')' newline DEBUT newline programme FIN'''
-    p[0] = AST.FunctionNode([p[2], p[4], p[9]])
+    p[0] = AST.FunctionNode([AST.TokenNode(p[2]), AST.TokenNode(p[4]), p[9]])
 
 def p_function_return(p):
     ''' function : FONCTION IDENTIFIER '(' arguments ')' newline DEBUT newline programme RETOURNE IDENTIFIER newline FIN'''
-    p[0] = AST.FunctionNode([p[2], p[4], p[9], p[11]])
+    p[0] = AST.FunctionNode([AST.TokenNode(p[2]), AST.TokenNode(p[4]), p[9], AST.TokenNode(p[11])])
 
 def p_arguments(p):
     ''' arguments : IDENTIFIER '''
@@ -68,7 +68,7 @@ def p_statement(p):
 
 def p_statement_newline(p):
     ''' statement : newline '''
-    p[0] = AST.Node()
+    p[0] = AST.NewLineNode()
 
 def p_statement_print(p):
     ''' statement : AFFICHE expression '''
@@ -76,35 +76,35 @@ def p_statement_print(p):
 
 def p_statement_call_noargs(p):
     ''' statement : APPELLE IDENTIFIER '(' ')' '''
-    p[0] = AST.CallNode([p[2], []])
+    p[0] = AST.CallNode([AST.TokenNode(p[2]), AST.TokenNode([])])
 
 def p_statement_call_noargs_return(p):
     ''' statement : APPELLE IDENTIFIER '(' ')' DONNE IDENTIFIER '''
-    p[0] = AST.CallNode([p[2], [], p[6]])
+    p[0] = AST.CallNode([AST.TokenNode(p[2]), AST.TokenNode([]), AST.TokenNode(p[6])])
 
 def p_statement_call(p):
     ''' statement : APPELLE IDENTIFIER '(' argval ')' '''
-    p[0] = AST.CallNode([p[2], p[4]])
+    p[0] = AST.CallNode([AST.TokenNode(p[2]), AST.TokenNode(p[4])])
 
 def p_statement_call_return(p):
     ''' statement : APPELLE IDENTIFIER '(' argval ')' DONNE IDENTIFIER '''
-    p[0] = AST.CallNode([p[2], p[4], p[7]])
+    p[0] = AST.CallNode([AST.TokenNode(p[2]), AST.TokenNode(p[4]), AST.TokenNode(p[7])])
 
 def p_statement_inc(p):
     '''statement : INC expression'''
-    p[0] = AST.IncDecNode([p[2], '+'])
+    p[0] = AST.IncDecNode([p[2], AST.TokenNode('+')])
 
 def p_statement_dec(p):
     '''statement : DEC expression'''
-    p[0] = AST.IncDecNode([p[2], '-'])
+    p[0] = AST.IncDecNode([p[2], AST.TokenNode('-')])
 
 def p_statement_input(p):
     ''' statement : LIRE IDENTIFIER '''
-    p[0] = AST.InputNode([p[2]])
+    p[0] = AST.InputNode([AST.TokenNode(p[2])])
 
 def p_statement_pyexec(p):
     ''' statement : NALEAT IDENTIFIER '''
-    p[0] = AST.PyExecNode([p[2]])
+    p[0] = AST.PyExecNode([AST.TokenNode(p[2])])
 
 def p_structure(p):
     ''' structure : TANT QUE expression FAIRE newline programme FINTANTQUE '''
@@ -125,7 +125,7 @@ def p_expression_num_or_var(p):
 
 def p_expression_string(p):
     '''expression : STRING '''
-    p[0] = AST.TokenNode(p[1])
+    p[0] = AST.TokenNode(AST.TokenNode(p[1]))
 
 def p_expression_paren(p):
     '''expression : '(' expression ')' '''
@@ -137,7 +137,7 @@ def p_minus(p):
 
 def p_assign(p):
     ''' assignation : IDENTIFIER '=' expression '''
-    p[0] = AST.AssignNode([p[1],p[3]])
+    p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
 def p_error(p):
     if p:

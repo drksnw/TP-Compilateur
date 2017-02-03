@@ -22,28 +22,29 @@ _running_function = None
 def execute(self):
     from random import randrange
     global _running_function
-    _funcs[_running_function][1][self.children[0]] = randrange(10000)
+    _funcs[_running_function][1][self.children[0].tok] = randrange(10000)
 
 
 @addToClass(AST.FunctionNode)
 def execute(self):
     from collections import OrderedDict
-    _funcs[self.children[0]] = {}
-    _funcs[self.children[0]][0] = self.children[2]
-    _funcs[self.children[0]][1] = OrderedDict()
-    _funcs[self.children[0]][3] = []
-    if self.children[1] != 0:
-        for arg in self.children[1]:
-            _funcs[self.children[0]][1][arg] = None
-            _funcs[self.children[0]][3].append(arg)
+    funcName = self.children[0].tok
+    _funcs[funcName] = {}
+    _funcs[funcName][0] = self.children[2]
+    _funcs[funcName][1] = OrderedDict()
+    _funcs[funcName][3] = []
+    if self.children[1].tok != 0:
+        for arg in self.children[1].tok:
+            _funcs[funcName][1][arg] = None
+            _funcs[funcName][3].append(arg)
     if len(self.children) > 3:
-        _funcs[self.children[0]][2] = self.children[3]
+        _funcs[funcName][2] = self.children[3]
 
 @addToClass(AST.CallNode)
 def execute(self):
     from collections import OrderedDict
     global _running_function
-    next_function = self.children[0]
+    next_function = str(self.children[0]).replace("'", "").rstrip()
     _funcs[next_function][1] = OrderedDict()
     for arg in _funcs[next_function][3]:
         _funcs[next_function][1][arg] = None
@@ -52,12 +53,14 @@ def execute(self):
     for k in _funcs[next_function][1].keys():
         keys.append(k)
     for k in keys:
-        _funcs[next_function][1][k] = self.children[1][i].execute()
+        _funcs[next_function][1][k] = self.children[1].tok[i].execute()
         i += 1
     _running_function = next_function
     _funcs[_running_function][0].execute()
-    if self.children[2]:
-        _funcs["main"][1][self.children[2]] = _funcs[_running_function][1][_funcs[_running_function][2]]
+    if len(self.children) > 2:
+        return_val = str(_funcs[_running_function][2]).replace("'", "").rstrip()
+        val = str(self.children[2]).replace("'", "").rstrip()
+        _funcs["main"][1][val] = _funcs[_running_function][1][return_val]
     _running_function = "main"
 
 @addToClass(AST.ExecutableNode)
@@ -88,6 +91,7 @@ def execute(self):
     if len(args) == 1:
         args.insert(0,0)
     try:
+        args = [c.tok if isinstance(c, AST.TokenNode) else c for c in args ]
         return reduce(operations[self.op], args)
     except TypeError:
         for arg in args:
@@ -101,7 +105,7 @@ def execute(self):
 @addToClass(AST.AssignNode)
 def execute(self):
     global _running_function
-    _funcs[_running_function][1][self.children[0]] = self.children[1].execute()
+    _funcs[_running_function][1][self.children[0].tok] = self.children[1].execute()
 
 @addToClass(AST.PrintNode)
 def execute(self):
@@ -115,7 +119,7 @@ def execute(self):
 @addToClass(AST.IncDecNode)
 def execute(self):
     global _running_function
-    _funcs[_running_function][1][self.children[0].tok] = reduce(operations[self.children[1]], [self.children[0].execute(),1])
+    _funcs[_running_function][1][self.children[0].tok] = reduce(operations[self.children[1].tok], [self.children[0].execute(),1])
 
 @addToClass(AST.CondNode)
 def execute(self):
@@ -133,7 +137,7 @@ def execute(self):
 def execute(self):
     global _running_function
     minput = input()
-    _funcs[_running_function][1][self.children[0]] = int(minput) if minput.isdigit() or minput[1:].isdigit() else minput
+    _funcs[_running_function][1][self.children[0].tok] = int(minput) if minput.isdigit() or minput[1:].isdigit() else minput
 
 
 
