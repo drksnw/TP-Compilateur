@@ -76,9 +76,11 @@ def execute(self):
 @addToClass(AST.TokenNode)
 def execute(self):
     global _running_function
+    if isinstance(self.tok, AST.TokenNode):
+        if isinstance(self.tok.tok, str):
+            if self.tok.tok[0] == '"':
+                return self.tok.tok[1:-1]
     if isinstance(self.tok, str):
-        if self.tok[0] == '"':
-            return self.tok[1:-1]
         try:
             return _funcs[_running_function][1][self.tok]
         except KeyError:
@@ -90,6 +92,9 @@ def execute(self):
     args = [c.execute() for c in self.children]
     if len(args) == 1:
         args.insert(0,0)
+    if(isinstance(args[0], str)):
+        for i in range(1, len(args)):
+            args[i] = str(args[i])
     try:
         args = [c.tok if isinstance(c, AST.TokenNode) else c for c in args ]
         return reduce(operations[self.op], args)
